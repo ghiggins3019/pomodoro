@@ -18,16 +18,11 @@ function formatTime(seconds) {
 // Update timer display
 function updateDisplay() {
   timerDisplay.textContent = formatTime(timeLeft);
-  updateBackground();
 }
 
-// Change background based on period
+// Update background reliably
 function updateBackground() {
-  if (isWork) {
-    document.body.style.backgroundColor = "#191919"; // work period
-  } else {
-    document.body.style.backgroundColor = "#8ec07c"; // break period
-  }
+  document.body.style.backgroundColor = isWork ? "#191919" : "#8ec07c";
 }
 
 // Start timer
@@ -45,6 +40,7 @@ function startTimer() {
       isWork = !isWork;
       timeLeft = isWork ? workTime : breakTime;
       updateDisplay();
+      updateBackground(); // <-- update background immediately
     }
   }, 1000);
 }
@@ -74,11 +70,13 @@ timerDisplay.addEventListener("click", () => {
   if (!isNaN(workMinutes) && workMinutes > 0) workTime = workMinutes * 60;
   if (!isNaN(breakMinutes) && breakMinutes > 0) breakTime = breakMinutes * 60;
 
-  // Reset current period to work
+  // Reset to work period
   isWork = true;
   timeLeft = workTime;
   updateDisplay();
+  updateBackground(); // <-- make sure background updates immediately
 });
 
-// Initialize display
+// Initialize display and background
 updateDisplay();
+updateBackground();
