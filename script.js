@@ -36,11 +36,11 @@ function startTimer() {
         timeLeft--;
         updateDisplay();
       } else {
-        // Switch between work and break
+        // Switch between work and break automatically
         isWork = !isWork;
         timeLeft = (isWork ? workTime : breakTime) * 60;
+        updateBackground();
         updateDisplay();
-        alert(isWork ? "Work time!" : "Break time!");
       }
     }, 1000);
   }
@@ -55,7 +55,9 @@ function pauseTimer() {
 // ==== Reset timer ====
 function resetTimer() {
   pauseTimer();
-  timeLeft = (isWork ? workTime : breakTime) * 60;
+  isWork = true;
+  timeLeft = workTime * 60;
+  updateBackground();
   updateDisplay();
 }
 
@@ -68,11 +70,21 @@ function saveSettings() {
   resetTimer();
 }
 
+// ==== Change background based on state ====
+function updateBackground() {
+  if (isWork) {
+    document.body.style.backgroundColor = "#191919";
+  } else {
+    document.body.style.backgroundColor = "#8ec07c";
+  }
+}
+
 // ==== Hook up button events ====
 startBtn.onclick = startTimer;
 pauseBtn.onclick = pauseTimer;
 resetBtn.onclick = resetTimer;
 saveBtn.onclick = saveSettings;
 
-// ==== Initialize display ====
+// ==== Initialize display and background ====
 updateDisplay();
+updateBackground();
