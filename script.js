@@ -1,18 +1,21 @@
 const timerDisplay = document.getElementById("timer");
 const startPauseBtn = document.getElementById("startPauseBtn");
 
-let timeLeft = 25 * 60; // default 25 minutes
+let workTime = 25 * 60;  // default work time in seconds
+let breakTime = 5 * 60;  // default break time in seconds
+let timeLeft = workTime;
+let isWork = true;       // start in work period
 let timer = null;
 let running = false;
 
-// Convert seconds to mm:ss
+// Format seconds to mm:ss
 function formatTime(seconds) {
   const minutes = Math.floor(seconds / 60);
   const secs = seconds % 60;
   return `${minutes}:${secs.toString().padStart(2, "0")}`;
 }
 
-// Update display
+// Update timer display
 function updateDisplay() {
   timerDisplay.textContent = formatTime(timeLeft);
 }
@@ -28,8 +31,10 @@ function startTimer() {
       timeLeft--;
       updateDisplay();
     } else {
-      // Timer ends → auto-stop
-      pauseTimer();
+      // Switch periods automatically
+      isWork = !isWork;
+      timeLeft = isWork ? workTime : breakTime;
+      updateDisplay();
     }
   }, 1000);
 }
@@ -47,22 +52,23 @@ startPauseBtn.addEventListener("click", () => {
   else startTimer();
 });
 
-// Make timer editable on click
-timerDisplay.addEventListener("keydown", (e) => {
-  if (e.key === "Enter") {
-    e.preventDefault();
-    const parts = timerDisplay.textContent.split(":").map(Number);
+// Click timer to set work and break times
+timerDisplay.addEventListener("click", () => {
+  pauseTimer(); // pause while editing
+  const workInput = prompt("Set work time (minutes):", Math.floor(workTime / 60));
+  const breakInput = prompt("Set break time (minutes):", Math.floor(breakTime / 60));
 
-    if (parts.length === 2 && !isNaN(parts[0]) && !isNaN(parts[1])) {
-      timeLeft = parts[0] * 60 + parts[1];
-      updateDisplay();
-    } else {
-      // Reset if invalid input
-      updateDisplay();
-    }
-    timerDisplay.blur(); // remove focus
-  }
+  const workMinutes = parseInt(workInput);
+  const breakMinutes = parseInt(breakInput);
+
+  if (!isNaN(workMinutes) && workMinutes > 0) workTime = workMinutes * 60;
+  if (!isNaN(breakMinutes) && breakMinutes > 0) breakTime = breakMinutes * 60;
+
+  // Reset current period to work
+  isWork = true;
+  timeLeft = workTime;
+  updateDisplay();
 });
 
-// Initialize
+// Initialize display
 updateDisplay();
