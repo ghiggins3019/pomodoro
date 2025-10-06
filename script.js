@@ -18,6 +18,16 @@ function formatTime(seconds) {
 // Update timer display
 function updateDisplay() {
   timerDisplay.textContent = formatTime(timeLeft);
+  updateBackground();
+}
+
+// Change background based on period
+function updateBackground() {
+  if (isWork) {
+    document.body.style.backgroundColor = "#191919"; // work period
+  } else {
+    document.body.style.backgroundColor = "#8ec07c"; // break period
+  }
 }
 
 // Start timer
