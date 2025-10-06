@@ -17,6 +17,8 @@ body {
 .timer {
   font-size: 5rem;
   margin-bottom: 20px;
+  cursor: text; /* indicates you can click to edit */
+  outline: none;
 }
 
 button {
