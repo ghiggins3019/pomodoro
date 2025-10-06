@@ -1,56 +1,90 @@
+// ==== Get HTML elements ====
 const timerDisplay = document.getElementById("timer");
-const startBtn = document.getElementById("startBtn");
+const startBtn = document.getElementById("start");
+const pauseBtn = document.getElementById("pause");
+const resetBtn = document.getElementById("reset");
+const saveBtn = document.getElementById("save");
 
-let timeLeft = 1500; // 25 minutes
-let isRunning = false;
-let timer;
-let isWorkSession = true;
+const workInput = document.getElementById("workTime");
+const breakInput = document.getElementById("breakTime");
 
+// ==== Load settings or use defaults ====
+let workTime = parseInt(localStorage.getItem("workTime")) || 25;
+let breakTime = parseInt(localStorage.getItem("breakTime")) || 5;
+workInput.value = workTime;
+breakInput.value = breakTime;
+
+// ==== Timer state ====
+let isWork = true;
+let timeLeft = workTime * 60;
+let timer = null;
+
+// ==== Update the timer display ====
 function updateDisplay() {
   const minutes = Math.floor(timeLeft / 60);
   const seconds = timeLeft % 60;
-  timerDisplay.textContent = `${minutes.toString().padStart(2, "0")}:${seconds
+  timerDisplay.textContent = `${minutes}:${seconds
     .toString()
     .padStart(2, "0")}`;
 }
 
+// ==== Start timer ====
 function startTimer() {
-  if (isRunning) return;
-  isRunning = true;
-  startBtn.textContent = "Pause";
-
-  timer = setInterval(() => {
-    timeLeft--;
-    updateDisplay();
-
-    if (timeLeft <= 0) {
-      clearInterval(timer);
-      isRunning = false;
-      switchTimer();
-    }
-  }, 1000);
+  if (!timer) {
+    timer = setInterval(() => {
+      if (timeLeft > 0) {
+        timeLeft--;
+        updateDisplay();
+      } else {
+        // Switch between work and break automatically
+        isWork = !isWork;
+        timeLeft = (isWork ? workTime : breakTime) * 60;
+        updateBackground();
+        updateDisplay();
+      }
+    }, 1000);
+  }
 }
 
+// ==== Pause timer ====
 function pauseTimer() {
-  isRunning = false;
-  startBtn.textContent = "Start";
   clearInterval(timer);
+  timer = null;
 }
 
-function switchTimer() {
-  document.body.style.backgroundColor = "#8ec07c"; // fade to green
-  setTimeout(() => {
-    isWorkSession = !isWorkSession;
-    timeLeft = isWorkSession ? 1500 : 300; // 25 min or 5 min
-    document.body.style.backgroundColor = "#1d2021"; // fade back to dark
-    updateDisplay();
-    startTimer(); // immediately start next timer
-  }, 1500); // matches fade duration
+// ==== Reset timer ====
+function resetTimer() {
+  pauseTimer();
+  isWork = true;
+  timeLeft = workTime * 60;
+  updateBackground();
+  updateDisplay();
 }
 
-startBtn.addEventListener("click", () => {
-  if (isRunning) pauseTimer();
-  else startTimer();
-});
+// ==== Save settings ====
+function saveSettings() {
+  workTime = parseInt(workInput.value);
+  breakTime = parseInt(breakInput.value);
+  localStorage.setItem("workTime", workTime);
+  localStorage.setItem("breakTime", breakTime);
+  resetTimer();
+}
 
+// ==== Change background based on state ====
+function updateBackground() {
+  if (isWork) {
+    document.body.style.backgroundColor = "#191919";
+  } else {
+    document.body.style.backgroundColor = "#8ec07c";
+  }
+}
+
+// ==== Hook up button events ====
+startBtn.onclick = startTimer;
+pauseBtn.onclick = pauseTimer;
+resetBtn.onclick = resetTimer;
+saveBtn.onclick = saveSettings;
+
+// ==== Initialize display and background ====
 updateDisplay();
+updateBackground();
