@@ -1,0 +1,50 @@
+/* ==== Basic page setup ==== */
+body {
+  font-family: sans-serif;
+  background-color: #1e1e2f;
+  color: #fff;
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  margin: 0;
+}
+
+/* ==== Container ==== */
+.container {
+  max-width: 400px;
+}
+
+/* ==== Timer display ==== */
+.timer {
+  font-size: 5rem;
+  margin: 20px 0;
+}
+
+/* ==== Buttons ==== */
+button {
+  margin: 5px;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  background-color: #3b3b5c;
+  color: white;
+  font-size: 1rem;
+}
+
+button:hover {
+  background-color: #4e4e75;
+}
+
+/* ==== Settings area ==== */
+.settings {
+  margin-top: 20px;
+}
+
+.settings input {
+  width: 60px;
+  text-align: center;
+  margin-left: 5px;
+}
