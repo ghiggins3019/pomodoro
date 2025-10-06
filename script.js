@@ -1,21 +1,23 @@
 const timerDisplay = document.getElementById("timer");
 const startPauseBtn = document.getElementById("startPauseBtn");
 
-let workTime = 25 * 60; // seconds
-let breakTime = 5 * 60; // seconds
-let timeLeft = workTime;
-let isWork = true;
+let timeLeft = 25 * 60; // default 25 minutes
 let timer = null;
 let running = false;
 
-// Update the timer text
-function updateDisplay() {
-  const minutes = Math.floor(timeLeft / 60);
-  const seconds = timeLeft % 60;
-  timerDisplay.textContent = `${minutes}:${seconds.toString().padStart(2, "0")}`;
+// Convert seconds to mm:ss
+function formatTime(seconds) {
+  const minutes = Math.floor(seconds / 60);
+  const secs = seconds % 60;
+  return `${minutes}:${secs.toString().padStart(2, "0")}`;
 }
 
-// Start the timer
+// Update display
+function updateDisplay() {
+  timerDisplay.textContent = formatTime(timeLeft);
+}
+
+// Start timer
 function startTimer() {
   if (running) return;
   running = true;
@@ -26,16 +28,13 @@ function startTimer() {
       timeLeft--;
       updateDisplay();
     } else {
-      // Switch between work and break
-      isWork = !isWork;
-      timeLeft = isWork ? workTime : breakTime;
-      updateDisplay();
-      // Continue automatically
+      // Timer ends → auto-stop
+      pauseTimer();
     }
   }, 1000);
 }
 
-// Pause the timer
+// Pause timer
 function pauseTimer() {
   running = false;
   startPauseBtn.textContent = "Start";
@@ -48,5 +47,22 @@ startPauseBtn.addEventListener("click", () => {
   else startTimer();
 });
 
-// Initialize display
+// Make timer editable on click
+timerDisplay.addEventListener("keydown", (e) => {
+  if (e.key === "Enter") {
+    e.preventDefault();
+    const parts = timerDisplay.textContent.split(":").map(Number);
+
+    if (parts.length === 2 && !isNaN(parts[0]) && !isNaN(parts[1])) {
+      timeLeft = parts[0] * 60 + parts[1];
+      updateDisplay();
+    } else {
+      // Reset if invalid input
+      updateDisplay();
+    }
+    timerDisplay.blur(); // remove focus
+  }
+});
+
+// Initialize
 updateDisplay();
